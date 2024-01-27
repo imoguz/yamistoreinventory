@@ -74,16 +74,16 @@ const CreateNewCategory: React.FC<ICreateNewCategoryProps> = ({
 
     if (value === "1") {
       newCategory = {
-        name: formValues.topCategory.toLowerCase(),
+        name: formValues.topCategory,
       };
     } else if (value === "2") {
       newCategory = {
-        name: formValues.category.toLowerCase(),
+        name: formValues.category,
         parentCategory: formValues.topCategory,
       };
     } else if (value === "3") {
       newCategory = {
-        name: formValues.subCategory.toLowerCase(),
+        name: formValues.subCategory,
         parentCategory: formValues.category,
       };
     } else return;
