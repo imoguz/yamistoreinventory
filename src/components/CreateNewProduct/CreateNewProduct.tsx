@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import SaveIcon from "@mui/icons-material/Save";
-import { Tooltip, TextField } from "@mui/material";
-import { IconButton, InputAdornment } from "@mui/material";
+import { TextField, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { Tooltip, IconButton, InputAdornment, Select } from "@mui/material";
 import { Button, Grid, Paper, Typography } from "@mui/material";
-import { useThemeContext } from "../context/themeContext";
-import bgImage from "../assets/bgdotedimg.png";
-import { toastifySuccess, toastifyError } from "../helpers/toastify";
-import { useAppDispatch } from "../app/hooks";
+import { useThemeContext } from "../../context/themeContext";
+import bgImage from "../../assets/bgdotedimg.png";
+import CreateMultiCDN from "./CreateMultiCDN";
+import { toastifySuccess, toastifyError } from "../../helpers/toastify";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   readProducts,
   createProduct,
   updateProduct,
-} from "../features/productSlice";
-import FindBrand from "./FindBrand";
-import FindCategory from "./FindCategory";
-import FindStore from "./FindStore";
-import FindDiscount from "./FindDiscount";
-import FindPromotion from "./FindPromotion";
-import CreateMultiCDN from "./CreateMultiCDN";
+} from "../../features/productSlice";
+import { readBrands } from "../../features/brandSlice";
+import { readDiscounts } from "../../features/discountSlice";
+import { readPromotions } from "../../features/promotionSlice";
+import { readCategories } from "../../features/categorySlice";
+import { readStores } from "../../features/storeSlice";
 
 interface ICreateNewProductProps {
   setOpenNP: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,14 +33,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
 }) => {
   const { drawerOpen } = useThemeContext();
   const dispatch = useAppDispatch();
-  const [openModal, setOpenModal] = useState<IOpenModalState>({
-    brand: false,
-    category: false,
-    store: false,
-    discount: false,
-    promotion: false,
-    cdn: false,
-  });
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,6 +82,21 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
     });
     setOpenNP(false);
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      await dispatch(readBrands());
+      await dispatch(readDiscounts());
+      await dispatch(readPromotions());
+      await dispatch(readCategories());
+      await dispatch(readStores());
+    };
+    fetchData();
+  }, [dispatch]);
+  const { brands } = useAppSelector((state) => state.brand);
+  const { discounts } = useAppSelector((state) => state.discount);
+  const { promotions } = useAppSelector((state) => state.promotion);
+  const { categories } = useAppSelector((state) => state.category);
+  const { stores } = useAppSelector((state) => state.store);
 
   return (
     <Paper
@@ -157,109 +165,121 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
 
             <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
-                <Typography variant="subtitle1">Brand:</Typography>
+                <Typography variant="subtitle1">Brand :</Typography>
               </Grid>
               <Grid>
-                <TextField
-                  id="filled-basic"
-                  label="Select or enter a brand ID..."
-                  variant="outlined"
-                  value={formValues.brand}
-                  size="small"
-                  onChange={(e) =>
-                    setFormValues({ ...formValues, brand: e.target.value })
-                  }
+                <FormControl
                   sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ mx: 0 }}>
-                        <Tooltip title="Click to find brand">
-                          <IconButton
-                            aria-label="search"
-                            size="small"
-                            onClick={() =>
-                              setOpenModal({ ...openModal, brand: true })
-                            }
-                          >
-                            <SearchIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Select a brand
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={formValues.brand}
+                    label="Select a brand"
+                    onChange={(e) =>
+                      setFormValues({ ...formValues, brand: e.target.value })
+                    }
+                    MenuProps={{
+                      disableScrollLock: true,
+                      PaperProps: {
+                        style: {
+                          maxHeight: 260,
+                        },
+                      },
+                    }}
+                  >
+                    {brands.map((brand, index) => (
+                      <MenuItem key={index} value={brand._id}>
+                        {brand.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
 
             <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
-                <Typography variant="subtitle1">Category:</Typography>
+                <Typography variant="subtitle1">Category :</Typography>
               </Grid>
               <Grid>
-                <TextField
-                  id="filled-basic"
-                  label="Select or enter a category ID..."
-                  variant="outlined"
-                  value={formValues.category}
-                  size="small"
-                  onChange={(e) =>
-                    setFormValues({ ...formValues, category: e.target.value })
-                  }
+                <FormControl
                   sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ mx: 0 }}>
-                        <Tooltip title="Click to find category">
-                          <IconButton
-                            aria-label="search"
-                            size="small"
-                            onClick={() =>
-                              setOpenModal({ ...openModal, category: true })
-                            }
-                          >
-                            <SearchIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Select a category
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={formValues.category}
+                    label="Select a category"
+                    onChange={(e) =>
+                      setFormValues({ ...formValues, category: e.target.value })
+                    }
+                    MenuProps={{
+                      disableScrollLock: true,
+                      PaperProps: {
+                        style: {
+                          maxHeight: 260,
+                        },
+                      },
+                    }}
+                  >
+                    {categories.map((category, index) =>
+                      category?.parentCategory?.parentCategory?.name ? (
+                        <MenuItem key={index} value={category._id}>
+                          {category?.parentCategory?.parentCategory?.name}/
+                          {category?.parentCategory?.name}/{category.name}
+                        </MenuItem>
+                      ) : null
+                    )}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
 
             <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
-                <Typography variant="subtitle1">Store ID :</Typography>
+                <Typography variant="subtitle1">Store :</Typography>
               </Grid>
               <Grid>
-                <TextField
-                  id="filled-basic"
-                  label="Select or enter a store ID..."
-                  variant="outlined"
-                  value={formValues.store}
-                  size="small"
-                  onChange={(e) =>
-                    setFormValues({ ...formValues, store: [e.target.value] })
-                  }
+                <FormControl
                   sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ mx: 0 }}>
-                        <Tooltip title="Click to find store">
-                          <IconButton
-                            aria-label="search"
-                            size="small"
-                            onClick={() =>
-                              setOpenModal({ ...openModal, store: true })
-                            }
-                          >
-                            <SearchIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Select a store
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={formValues.store[0]}
+                    label="Select a store"
+                    onChange={(e) =>
+                      setFormValues({ ...formValues, store: [e.target.value] })
+                    }
+                    MenuProps={{
+                      disableScrollLock: true,
+                      PaperProps: {
+                        style: {
+                          maxHeight: 260,
+                        },
+                      },
+                    }}
+                  >
+                    {stores.map((store, index) => (
+                      <MenuItem key={index} value={store._id}>
+                        {store.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
 
@@ -288,73 +308,82 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
 
             <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
-                <Typography variant="subtitle1">Discount:</Typography>
+                <Typography variant="subtitle1">Discount :</Typography>
               </Grid>
               <Grid>
-                <TextField
-                  id="filled-basic"
-                  label="Select or enter a discount ID..."
-                  variant="outlined"
-                  value={formValues.discount}
-                  size="small"
-                  onChange={(e) =>
-                    setFormValues({ ...formValues, discount: e.target.value })
-                  }
+                <FormControl
                   sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ mx: 0 }}>
-                        <Tooltip title="Click to find discount ID">
-                          <IconButton
-                            aria-label="delete"
-                            size="small"
-                            onClick={() =>
-                              setOpenModal({ ...openModal, discount: true })
-                            }
-                          >
-                            <SearchIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Select a discount
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={formValues.discount}
+                    label="Select a discount"
+                    onChange={(e) =>
+                      setFormValues({ ...formValues, discount: e.target.value })
+                    }
+                    MenuProps={{
+                      disableScrollLock: true,
+                      PaperProps: {
+                        style: {
+                          maxHeight: 260,
+                        },
+                      },
+                    }}
+                  >
+                    {discounts.map((discount, index) => (
+                      <MenuItem key={index} value={discount._id}>
+                        {discount.type} / {discount.amount}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
 
             <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
-                <Typography variant="subtitle1">Promotion:</Typography>
+                <Typography variant="subtitle1">Promotion :</Typography>
               </Grid>
               <Grid>
-                <TextField
-                  id="filled-basic"
-                  label="Select or enter a promotion ID..."
-                  variant="outlined"
-                  value={formValues.promotion}
-                  size="small"
-                  onChange={(e) =>
-                    setFormValues({ ...formValues, promotion: e.target.value })
-                  }
+                <FormControl
                   sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ mx: 0 }}>
-                        <Tooltip title="Click to find promotion ID">
-                          <IconButton
-                            aria-label="delete"
-                            size="small"
-                            onClick={() =>
-                              setOpenModal({ ...openModal, promotion: true })
-                            }
-                          >
-                            <SearchIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Select a promotion
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={formValues.promotion}
+                    label="Select a promotion"
+                    onChange={(e) =>
+                      setFormValues({
+                        ...formValues,
+                        promotion: e.target.value,
+                      })
+                    }
+                    MenuProps={{
+                      disableScrollLock: true,
+                      PaperProps: {
+                        style: {
+                          maxHeight: 260,
+                        },
+                      },
+                    }}
+                  >
+                    {promotions.map((promotion, index) => (
+                      <MenuItem key={index} value={promotion._id}>
+                        {promotion.type} / {promotion.amount}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
 
@@ -383,9 +412,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
                           <IconButton
                             aria-label="delete"
                             size="small"
-                            onClick={() =>
-                              setOpenModal({ ...openModal, cdn: true })
-                            }
+                            onClick={() => setOpenModal(true)}
                           >
                             <SearchIcon />
                           </IconButton>
@@ -427,18 +454,6 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
           </Button>
         </Grid>
       </Grid>
-      {/* <FindProduct {...{ openFP, setOpenFP, formValues, setFormValues }} /> */}
-      <FindBrand {...{ openModal, setOpenModal, formValues, setFormValues }} />
-      <FindCategory
-        {...{ openModal, setOpenModal, formValues, setFormValues }}
-      />
-      <FindStore {...{ openModal, setOpenModal, formValues, setFormValues }} />
-      <FindDiscount
-        {...{ openModal, setOpenModal, formValues, setFormValues }}
-      />
-      <FindPromotion
-        {...{ openModal, setOpenModal, formValues, setFormValues }}
-      />
       <CreateMultiCDN
         {...{ openModal, setOpenModal, formValues, setFormValues }}
       />

@@ -11,10 +11,10 @@ interface IProductState {
 export const readProducts = createAsyncThunk<IProduct[]>(
   "product/readProducts",
   async () => {
-    const { data } = await axios<IProduct[]>(
+    const { data } = await axios<IProductData>(
       process.env.REACT_APP_BASE_URL + "/products"
     );
-    return data;
+    return data.data;
   }
 );
 

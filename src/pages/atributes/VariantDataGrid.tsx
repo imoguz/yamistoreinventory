@@ -160,7 +160,7 @@ export default function VariantDataGrid() {
       editable: true,
       type: "singleSelect",
       valueOptions: ["true", "false"],
-      valueGetter: (params) => params?.row?.isDefault || "",
+      // valueGetter: (params) => params?.row?.isDefault || "false",
     },
     {
       field: "createdAt",

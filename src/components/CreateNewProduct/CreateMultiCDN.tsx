@@ -2,8 +2,8 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { VisuallyHiddenInput } from "../helpers/styles";
-import uploadToCloudinary from "../helpers/uploadToCloudinary";
+import { VisuallyHiddenInput } from "../../helpers/styles";
+import uploadToCloudinary from "../../helpers/uploadToCloudinary";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
@@ -18,7 +18,7 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Checkbox from "@mui/material/Checkbox";
 import Avatar from "@mui/material/Avatar";
 import AddLinkIcon from "@mui/icons-material/AddLink";
-import { toastifyError } from "../helpers/toastify";
+import { toastifyError } from "../../helpers/toastify";
 
 const style = {
   position: "absolute",
@@ -33,8 +33,8 @@ const style = {
 };
 
 interface ICreateMultiCDNProps {
-  openModal: IOpenModalState;
-  setOpenModal: React.Dispatch<React.SetStateAction<IOpenModalState>>;
+  openModal: boolean;
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   formValues: INewProduct;
   setFormValues: React.Dispatch<React.SetStateAction<INewProduct>>;
 }
@@ -45,7 +45,7 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
   formValues,
   setFormValues,
 }) => {
-  const handleClose = () => setOpenModal({ ...openModal, cdn: false });
+  const handleClose = () => setOpenModal(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [CDNLinks, setCDNLinks] = useState<string[]>([]);
 
@@ -113,7 +113,7 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
 
   return (
     <Modal
-      open={openModal.cdn}
+      open={openModal}
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"

@@ -244,6 +244,18 @@ interface IProduct {
   updatedAt: Date;
 }
 
+interface IProductData {
+  pageSize: number;
+  totalRecords: number;
+  pages: {
+    total: number | null;
+    previous: boolean;
+    current: number | null;
+    next: boolean;
+  };
+  data: IProduct[];
+}
+
 interface IVariant {
   color_id: {
     createdAt: Date;
@@ -294,11 +306,11 @@ interface INewProduct {
   images: image[];
 }
 
-interface IOpenModalState {
-  brand: boolean;
-  category: boolean;
-  store: boolean;
-  discount: boolean;
-  promotion: boolean;
-  cdn: boolean;
-}
+// interface IOpenModalState {
+//   brand: boolean;
+//   category: boolean;
+//   store: boolean;
+//   discount: boolean;
+//   promotion: boolean;
+//   cdn: boolean;
+// }

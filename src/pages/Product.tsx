@@ -1,5 +1,6 @@
 import * as React from "react";
 import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import { Box, Button, CircularProgress, Collapse } from "@mui/material";
@@ -15,7 +16,7 @@ import {
   GridRowId,
 } from "@mui/x-data-grid";
 import ConfirmDeletion from "../components/ConfirmDeletion";
-import CreateNewProduct from "../components/CreateNewProduct";
+import CreateNewProduct from "../components/CreateNewProduct/CreateNewProduct";
 
 export default function Product() {
   const { products, loading } = useAppSelector((state) => state.product);
@@ -68,6 +69,7 @@ export default function Product() {
         }
       }
     };
+
     if (confirmDelete.isDelete) {
       deleteRow();
       setConfirmDelete({
@@ -291,8 +293,8 @@ export default function Product() {
       <Button
         variant="contained"
         size="small"
-        startIcon={<AddIcon />}
-        onClick={() => setOpenNP(true)}
+        startIcon={openNP ? <RemoveIcon /> : <AddIcon />}
+        onClick={() => setOpenNP(!openNP)}
         sx={{
           mt: 1,
           backgroundColor: "#126E82",

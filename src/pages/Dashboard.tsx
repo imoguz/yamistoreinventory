@@ -42,7 +42,7 @@ export default function Dashboard() {
 
   React.useEffect(() => {
     const storedMenuItem = sessionStorage.getItem("selectedMenuItem");
-    setSelectedMenuItem(storedMenuItem ? storedMenuItem : null);
+    setSelectedMenuItem(storedMenuItem ? storedMenuItem : "Dashboards");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
