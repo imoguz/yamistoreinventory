@@ -10,12 +10,12 @@ import VariantDataGrid from "../pages/atributes/VariantDataGrid";
 import DiscountDataGrid from "../pages/atributes/DiscountDataGrid";
 import PromotionDataGrid from "../pages/atributes/PromotionDataGrid";
 import CategoryDataGrid from "../pages/atributes/CategoryDataGrid";
-import Sales from "../pages/Sales";
 import Attribute from "../pages/Attribute";
 import ProductDataGrid from "../pages/Product";
 import Brand from "../pages/Brand";
 import Settings from "../pages/Settings";
 import BannerData from "../pages/settings/BannerData";
+import Store from "../pages/Store";
 
 const Router = () => {
   return (
@@ -35,6 +35,7 @@ const Router = () => {
             </Route>
             <Route path="product" element={<ProductDataGrid />} />
             <Route path="brand" element={<Brand />} />
+            <Route path="store" element={<Store />} />
             <Route path="settings">
               <Route index element={<Settings />} />
               <Route path="banner" element={<BannerData />} />

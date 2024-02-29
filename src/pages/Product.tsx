@@ -86,7 +86,6 @@ export default function Product() {
     const selectedProduct: IProduct | undefined = products.find(
       (product) => product._id === id
     );
-    console.log(selectedProduct);
     if (selectedProduct) {
       setFormValues({
         id: selectedProduct._id,
@@ -101,7 +100,7 @@ export default function Product() {
         discount: selectedProduct.discount._id,
         promotion: selectedProduct.promotion._id,
         images: selectedProduct.images.map((i) => {
-          return i.url;
+          return { url: i.url, isMainImage: i.isMainImage };
         }),
       } as any);
     }
@@ -111,6 +110,21 @@ export default function Product() {
   const handleDeleteClick = (id: GridRowId) => async () => {
     setConfirmDelete({ ...confirmDelete, id: id as string, open: true });
   };
+
+  const initialFormValues = () => {
+    setFormValues({
+      name: "",
+      description: "",
+      brand: "",
+      category: "",
+      store: [],
+      price: null,
+      discount: "",
+      promotion: "",
+      images: [],
+    });
+  };
+
   const colWidth = 90;
   const columns: GridColDef[] = [
     {
@@ -294,7 +308,10 @@ export default function Product() {
         variant="contained"
         size="small"
         startIcon={openNP ? <RemoveIcon /> : <AddIcon />}
-        onClick={() => setOpenNP(!openNP)}
+        onClick={() => {
+          openNP && initialFormValues();
+          setOpenNP(!openNP);
+        }}
         sx={{
           mt: 1,
           backgroundColor: "#126E82",

@@ -9,11 +9,11 @@ import { toastifySuccess, toastifyError } from "../helpers/toastify";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import { useEffect } from "react";
 import {
-  readBrands,
-  deleteBrand,
-  createBrand,
-  updateBrand,
-} from "../features/brandSlice";
+  readStores,
+  deleteStore,
+  createStore,
+  updateStore,
+} from "../features/storeSlice";
 
 import {
   GridToolbar,
@@ -29,40 +29,40 @@ import {
 } from "@mui/x-data-grid";
 import ConfirmDeletion from "../components/ConfirmDeletion";
 
-export default function Brand() {
-  const { brands, loading } = useAppSelector((state) => state.brand);
-  const [rows, setRows] = React.useState<IBrand[]>(brands);
+export default function Store() {
+  const { stores, loading } = useAppSelector((state) => state.store);
+  const [rows, setRows] = React.useState<IStore[]>(stores);
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
   );
   const [confirmDelete, setConfirmDelete] = React.useState<IConfirmDelete>({
     open: false,
     isDelete: false,
-    model: "brand",
+    model: "store",
     id: null,
   });
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(readBrands());
+    dispatch(readStores());
   }, [dispatch]);
 
   useEffect(() => {
-    setRows(brands);
-  }, [brands]);
+    setRows(stores);
+  }, [stores]);
 
   useEffect(() => {
     const deleteRow = async () => {
       if (confirmDelete.isDelete) {
         const response = await dispatch(
-          deleteBrand(confirmDelete.id as string)
+          deleteStore(confirmDelete.id as string)
         );
         if (response.meta.requestStatus === "fulfilled") {
           setRows(rows.filter((row) => row._id !== confirmDelete.id));
-          toastifySuccess("brand successfully deleted.");
+          toastifySuccess("store successfully deleted.");
         } else if (response.meta.requestStatus === "rejected") {
-          toastifyError("Network Error. brand cannot be deleted...");
+          toastifyError("Network Error. store cannot be deleted...");
         } else {
           toastifyError(
             "An unexpected error happened. Please, try again later..."
@@ -76,7 +76,7 @@ export default function Brand() {
       setConfirmDelete({
         open: false,
         isDelete: false,
-        model: "brand",
+        model: "store",
         id: null,
       });
     }
@@ -93,7 +93,7 @@ export default function Brand() {
         name: "",
         description: "",
         logo_url: "",
-        website_url: "",
+        image_url: "",
         createdAt: new Date(),
         updatedAt: new Date(),
         isNew: true,
@@ -139,32 +139,32 @@ export default function Brand() {
   };
 
   const processRowUpdate = async (newRow: GridRowModel) => {
-    const newBrand: INewBrand = {
+    const newStore: INewStore = {
       name: newRow.name,
       description: newRow.description,
       logo_url: newRow.logo_url,
-      website_url: newRow.website_url,
+      image_url: newRow.image_url,
     };
     if (newRow.isNew) {
-      const response = await dispatch(createBrand(newBrand));
+      const response = await dispatch(createStore(newStore));
       if (response.meta.requestStatus === "fulfilled") {
-        const updatedRow = response.payload as IBrand;
+        const updatedRow = response.payload as IStore;
         setRows(rows.map((row) => (row._id === newRow._id ? updatedRow : row)));
-        toastifySuccess("brand successfully created.");
+        toastifySuccess("store successfully created.");
         return updatedRow;
       } else {
-        toastifyError("Network error. brand cannot be added...");
+        toastifyError("Network error. store cannot be added...");
         return;
       }
     } else {
-      const data = await dispatch(updateBrand({ newBrand, id: newRow._id }));
+      const data = await dispatch(updateStore({ newStore, id: newRow._id }));
       if (data.meta.requestStatus === "fulfilled") {
-        const updatedRow = { ...newRow, isNew: false } as IBrand;
+        const updatedRow = { ...newRow, isNew: false } as IStore;
         setRows(rows.map((row) => (row._id === newRow._id ? updatedRow : row)));
-        toastifySuccess("brand successfully updated.");
+        toastifySuccess("store successfully updated.");
         return updatedRow;
       } else {
-        toastifyError("Network error. brand cannot be updated...");
+        toastifyError("Network error. store cannot be updated...");
         return;
       }
     }
@@ -202,8 +202,8 @@ export default function Brand() {
       editable: true,
     },
     {
-      field: "website_url",
-      headerName: "Website URL",
+      field: "image_url",
+      headerName: "Image URL",
       width: colWidth,
       editable: true,
     },
@@ -309,7 +309,7 @@ export default function Brand() {
           "&:hover": { backgroundColor: "#187e95" },
         }}
       >
-        Add New brand
+        Add New Store
       </Button>
       <DataGrid
         rows={rows}

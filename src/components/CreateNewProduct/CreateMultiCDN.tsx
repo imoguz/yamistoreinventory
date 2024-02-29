@@ -8,24 +8,19 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Divider, Grid, Tooltip } from "@mui/material";
+import { CardMedia, Divider, Grid, IconButton, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Checkbox from "@mui/material/Checkbox";
-import Avatar from "@mui/material/Avatar";
 import AddLinkIcon from "@mui/icons-material/AddLink";
 import { toastifyError } from "../../helpers/toastify";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 380,
   bgcolor: "background.paper",
   border: "1px solid #00909e",
   borderRadius: 1,
@@ -45,37 +40,23 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
   formValues,
   setFormValues,
 }) => {
-  const handleClose = () => setOpenModal(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [CDNLinks, setCDNLinks] = useState<string[]>([]);
+  const [CDNImageLinks, setCDNImageLinks] = useState<IImage[]>([]);
+  const [newIndex, setNewIndex] = React.useState<number | null>(null);
 
-  const [mainImage, setMainImage] = React.useState<number | null>(null);
-  const [checked, setChecked] = React.useState<number[]>([]);
+  const imageURL = `${process.env.REACT_APP_CLOUDINARY_BASE_URL}`;
+
+  const handleClose = () => {
+    setOpenModal(false);
+  };
 
   useEffect(() => {
     if (formValues.images.length > 0) {
-      const currentImage = formValues.images.map((item, index) => {
-        item.isMainImage === true && setMainImage(index);
-        return item.url;
-      });
-      setCDNLinks(currentImage);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      setCDNImageLinks([...formValues.images]);
+    } else setCDNImageLinks([]);
+  }, [formValues]);
 
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setChecked(newChecked);
-  };
-  console.log(CDNLinks);
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       setSelectedFile(files[0]);
@@ -89,26 +70,60 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
         "Error: CDN link cannot be created. Check your network connection."
       );
     } else {
-      setCDNLinks([...CDNLinks, link]);
+      setCDNImageLinks([
+        ...CDNImageLinks,
+        { url: link, isMainImage: CDNImageLinks.length > 1 ? false : true },
+      ]);
       setSelectedFile(null);
     }
   };
 
   const handleAddLink = () => {
-    const images = checked?.map((index) => {
-      return {
-        url: CDNLinks[index],
-        isMainImage: mainImage === index ? true : false,
-      };
-    });
-
-    if (images.length > 0 && mainImage === null) {
-      images[0].isMainImage = true;
-    }
-
-    setFormValues({ ...formValues, images: images });
+    setFormValues({ ...formValues, images: CDNImageLinks });
     setSelectedFile(null);
     handleClose();
+  };
+
+  const handleClickDeleteIcon = (deleteIndex: number) => {
+    const updatedList = CDNImageLinks.filter(
+      (_, index) => index !== deleteIndex
+    );
+    setCDNImageLinks([
+      ...updatedList.map((item, i) =>
+        i < 2 ? { ...item, isMainImage: true } : { ...item, isMainImage: false }
+      ),
+    ]);
+  };
+
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    index: number
+  ) => {};
+
+  const handleDragOver = (
+    e: React.DragEvent<HTMLDivElement>,
+    index: number
+  ) => {
+    setNewIndex(index);
+  };
+
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    if (index < 0 || index > CDNImageLinks.length - 1 || index === newIndex) {
+      // Index out of bounds or unchanged, do nothing
+      return;
+    }
+    if (newIndex !== null) {
+      let selectedItem: IImage = CDNImageLinks[index];
+      let newOrder: IImage[] = CDNImageLinks.filter((_, i) => i !== index);
+      newOrder.splice(newIndex, 0, selectedItem);
+      setCDNImageLinks([
+        ...newOrder.map((item, i) =>
+          i < 2
+            ? { ...item, isMainImage: true }
+            : { ...item, isMainImage: false }
+        ),
+      ]);
+    }
   };
 
   return (
@@ -168,7 +183,7 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
               <VisuallyHiddenInput
                 type="file"
                 accept="image/*"
-                onChange={handleChange}
+                onChange={handleImageFileChange}
               />
             </Button>
           </Box>
@@ -187,51 +202,105 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
               Create CDN
             </Button>
           </Grid>
-          <Divider sx={{ color: "#675858" }}>CDN Links</Divider>
-          <List
-            dense
-            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-          >
-            {!CDNLinks.length && (
-              <Typography color={"gray"} variant="body2" fontSize={15}>
-                No CDN link created...
-              </Typography>
-            )}
-            {CDNLinks.map((value, index) => {
-              const labelId = `checkbox-list-secondary-label-${value}`;
-              return (
-                <ListItem
-                  key={value}
-                  secondaryAction={
-                    <Checkbox
-                      edge="end"
-                      onChange={handleToggle(index)}
-                      checked={checked.indexOf(index) !== -1}
-                      inputProps={{ "aria-labelledby": labelId }}
-                    />
-                  }
-                  disablePadding
+          <Divider sx={{ color: "#675858" }}>CDN Image Links</Divider>
+
+          {!CDNImageLinks.length ? (
+            <Typography color={"gray"} variant="body2" fontSize={15}>
+              No image link created...
+            </Typography>
+          ) : (
+            <Grid
+              container
+              sx={{
+                bgcolor: "background.paper",
+                flexDirection: "column",
+              }}
+            >
+              {CDNImageLinks.map((image, index) => (
+                <Grid
+                  item
+                  key={index}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragEnd={(e) => handleDragEnd(e, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  sx={{
+                    width: 345,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    py: 0.5,
+                    "&:hover": {
+                      cursor: "all-scroll",
+                      boxShadow: 3,
+                      "&  .delete-box": { display: "block" },
+                      "&  .url-box": { width: 245 },
+                    },
+                  }}
                 >
-                  <ListItemButton>
-                    <ListItemAvatar>
-                      <Avatar alt="X" src={value} />
-                    </ListItemAvatar>
-                    <Tooltip
-                      title="Click to set main image."
-                      placement="top-end"
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: 25,
+                        color: "gray",
+                      }}
                     >
-                      <ListItemText
-                        sx={{ color: index === mainImage ? "darkred" : "" }}
-                        id={labelId}
-                        primary={value}
-                        onClick={() => setMainImage(index)}
+                      <DragIndicatorIcon />
+                    </Box>
+                    <Box
+                      className="image-box"
+                      width={35}
+                      height={33}
+                      position="relative"
+                    >
+                      <CardMedia
+                        component="img"
+                        alt="ProductImage"
+                        sx={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                        }}
+                        image={imageURL + image.url}
                       />
-                    </Tooltip>
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
+                      {image.isMainImage && (
+                        <Typography
+                          sx={{
+                            position: "absolute",
+                            textAlign: "center",
+                            bottom: 0,
+                            fontSize: 8,
+                            color: "#230000a4",
+                          }}
+                        >
+                          {`main image-${index + 1}`}
+                        </Typography>
+                      )}
+                    </Box>
+                    <Box className="url-box" width={275}>
+                      <Typography variant="body1" fontSize={14} noWrap>
+                        {image.url}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box
+                    className="delete-box"
+                    sx={{ width: 35, textAlign: "center", display: "none" }}
+                  >
+                    <IconButton
+                      aria-label="delete"
+                      size="small"
+                      onClick={() => handleClickDeleteIcon(index)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          )}
 
           <CardActions sx={{ justifyContent: "center", mt: 1 }}>
             <Button
@@ -248,10 +317,10 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
               variant="outlined"
               size="small"
               fullWidth
-              // disabled={!CDNLinks || CDNLinks.slice(0, 5) === "Error"}
+              // disabled={!CDNImageLinks || CDNImageLinks.slice(0, 5) === "Error"}
               onClick={handleAddLink}
             >
-              Add CDN Link
+              Add Image Links
             </Button>
           </CardActions>
         </Card>

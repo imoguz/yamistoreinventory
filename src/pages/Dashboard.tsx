@@ -17,10 +17,10 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import { DrawerHeader, AppBar, Drawer } from "../helpers/drawerConfig";
 import { menuItems } from "../helpers/menuitems";
-import yamilogo from "../assets/yamilogo.png";
+import yamilogo from "../assets/yamilogo.jpg";
 import { Outlet, useNavigate } from "react-router-dom";
 import SubMenu from "../components/SubMenu";
-import { Grid } from "@mui/material";
+import { Grid, Tooltip } from "@mui/material";
 import { useThemeContext } from "../context/themeContext";
 
 export default function Dashboard() {
@@ -119,12 +119,12 @@ export default function Dashboard() {
             sx={{
               opacity: 0.9,
               mx: "auto",
-              borderRadius: 4,
-              height: 25,
+              borderRadius: 1,
+              height: 35,
               "&:hover": { cursor: "pointer", opacity: 1 },
             }}
             src={yamilogo}
-            alt="yami"
+            alt="yamilogo"
           />
           <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon sx={{ color: "#3887BE" }} />
@@ -145,30 +145,37 @@ export default function Dashboard() {
                 selectedMenuItem === item.title ? "listItemTextActive" : ""
               }
             >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: drawerOpen ? "initial" : "center",
-                  px: 2.5,
-                }}
+              <Tooltip
+                title={drawerOpen ? "" : item.title}
+                placement="right"
+                arrow
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: drawerOpen ? 3 : "auto",
-                    justifyContent: "center",
-                    color: selectedMenuItem === item.title ? "red" : "#DAE1E7",
+                    minHeight: 48,
+                    justifyContent: drawerOpen ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.title}
-                  sx={{
-                    opacity: drawerOpen ? 1 : 0,
-                  }}
-                />
-              </ListItemButton>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: drawerOpen ? 3 : "auto",
+                      justifyContent: "center",
+                      color:
+                        selectedMenuItem === item.title ? "red" : "#DAE1E7",
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.title}
+                    sx={{
+                      opacity: drawerOpen ? 1 : 0,
+                    }}
+                  />
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
           ))}
         </List>

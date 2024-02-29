@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
 import SaveIcon from "@mui/icons-material/Save";
-import { TextField, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { Tooltip, IconButton, InputAdornment, Select } from "@mui/material";
+import {
+  TextField,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Box,
+} from "@mui/material";
+import { Tooltip, CardMedia, Select } from "@mui/material";
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { useThemeContext } from "../../context/themeContext";
 import bgImage from "../../assets/bgdotedimg.png";
 import CreateMultiCDN from "./CreateMultiCDN";
 import { toastifySuccess, toastifyError } from "../../helpers/toastify";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import {
   readProducts,
   createProduct,
@@ -19,6 +25,8 @@ import { readDiscounts } from "../../features/discountSlice";
 import { readPromotions } from "../../features/promotionSlice";
 import { readCategories } from "../../features/categorySlice";
 import { readStores } from "../../features/storeSlice";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface ICreateNewProductProps {
   setOpenNP: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,6 +42,23 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
   const { drawerOpen } = useThemeContext();
   const dispatch = useAppDispatch();
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const { brands } = useAppSelector((state) => state.brand);
+  const { discounts } = useAppSelector((state) => state.discount);
+  const { promotions } = useAppSelector((state) => state.promotion);
+  const { categories } = useAppSelector((state) => state.category);
+  const { stores } = useAppSelector((state) => state.store);
+  const imageURL = `${process.env.REACT_APP_CLOUDINARY_BASE_URL}`;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await dispatch(readBrands());
+      await dispatch(readDiscounts());
+      await dispatch(readPromotions());
+      await dispatch(readCategories());
+      await dispatch(readStores());
+    };
+    fetchData();
+  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -82,26 +107,17 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
     });
     setOpenNP(false);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      await dispatch(readBrands());
-      await dispatch(readDiscounts());
-      await dispatch(readPromotions());
-      await dispatch(readCategories());
-      await dispatch(readStores());
-    };
-    fetchData();
-  }, [dispatch]);
-  const { brands } = useAppSelector((state) => state.brand);
-  const { discounts } = useAppSelector((state) => state.discount);
-  const { promotions } = useAppSelector((state) => state.promotion);
-  const { categories } = useAppSelector((state) => state.category);
-  const { stores } = useAppSelector((state) => state.store);
+
+  const theme = useTheme();
+  const matchesXS = useMediaQuery(theme.breakpoints.up("xs"));
+  const matchesSM = useMediaQuery(theme.breakpoints.up("sm"));
+  const matchesMD = useMediaQuery(theme.breakpoints.up("md"));
+  const matches = matchesXS || matchesSM || matchesMD;
 
   return (
     <Paper
       sx={{
-        minWidth: 255,
+        minWidth: 285,
         width: `calc(100vw - ${drawerOpen ? 310 : 130}px)`,
         my: 1,
         p: 2,
@@ -110,7 +126,13 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
         backgroundRepeat: "repeat",
       }}
     >
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit}>
+      <Grid
+        container
+        spacing={{ xs: 0, sm: 1 }}
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ maxWidth: 900, mx: "auto" }}
+      >
         <Grid item>
           <Grid
             container
@@ -118,7 +140,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
             rowSpacing={2}
             justifyContent={"center"}
           >
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Name:</Typography>
               </Grid>
@@ -129,7 +151,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
                   value={formValues.name}
                   variant="outlined"
                   size="small"
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   onChange={(e) =>
                     setFormValues({
                       ...formValues,
@@ -140,7 +162,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Description:</Typography>
               </Grid>
@@ -152,7 +174,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
                   variant="outlined"
                   size="small"
                   inputProps={{ maxLength: 500 }}
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   onChange={(e) =>
                     setFormValues({
                       ...formValues,
@@ -163,13 +185,13 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Brand :</Typography>
               </Grid>
               <Grid>
                 <FormControl
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
@@ -202,13 +224,13 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Category :</Typography>
               </Grid>
               <Grid>
                 <FormControl
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
@@ -244,13 +266,13 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Store :</Typography>
               </Grid>
               <Grid>
                 <FormControl
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
@@ -283,7 +305,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Price:</Typography>
               </Grid>
@@ -295,7 +317,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
                   value={formValues.price || ""}
                   variant="outlined"
                   size="small"
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   onChange={(e) =>
                     setFormValues({
                       ...formValues,
@@ -306,13 +328,13 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Discount :</Typography>
               </Grid>
               <Grid>
                 <FormControl
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
@@ -345,13 +367,13 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Promotion :</Typography>
               </Grid>
               <Grid>
                 <FormControl
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
+                  sx={{ width: { xs: 260, sm: 285 }, bgcolor: "white" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
@@ -387,40 +409,99 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
               </Grid>
             </Grid>
 
-            <Grid item display={{ sm: "block", md: "flex" }} alignItems={"end"}>
+            <Grid item display={{ xs: "block", md: "flex" }} alignItems={"end"}>
               <Grid minWidth={100}>
                 <Typography variant="subtitle1">Images:</Typography>
               </Grid>
-              <Grid>
-                <TextField
-                  id="filled-basic"
-                  label="Create or enter image URL..."
-                  variant="outlined"
-                  value={formValues.images}
-                  size="small"
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      images: [{ url: e.target.value, isMainImage: false }],
-                    })
-                  }
-                  sx={{ width: { xs: 240, sm: 285 }, bgcolor: "white" }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ mx: 0 }}>
-                        <Tooltip title="Click to create image CDN">
-                          <IconButton
-                            aria-label="delete"
-                            size="small"
-                            onClick={() => setOpenModal(true)}
-                          >
-                            <SearchIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
+              <Grid
+                container
+                sx={{
+                  minWidth: { xs: 260, sm: 285 },
+                  maxWidth: { xs: 260, sm: 285, lg: 750 },
+                  color: "#c2c2c2",
+                  border: 1,
+                  borderRadius: 1,
+                  justifyContent: "space-between",
+                }}
+              >
+                <Grid
+                  item
+                  sx={{
+                    minWidth: { xs: 220, sm: 245 },
+                    display: "flex",
+                    alignItems: "center",
+                    color: "#878787",
                   }}
-                />
+                >
+                  {formValues.images.length ? (
+                    (matches
+                      ? formValues.images.slice(0, 5)
+                      : formValues.images
+                    ).map((image, index) => (
+                      <Box
+                        key={image._id}
+                        sx={{
+                          position: "relative",
+                          bgcolor: "red",
+                          width: 38,
+                          height: 40,
+                          borderRight: 1,
+                          borderColor: "#bdbdbd",
+                        }}
+                      >
+                        <CardMedia
+                          component="img"
+                          alt="ProductImage"
+                          sx={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "fill",
+                          }}
+                          image={imageURL + image.url}
+                        />
+
+                        {image.isMainImage && (
+                          <Typography
+                            sx={{
+                              position: "absolute",
+                              textAlign: "center",
+                              bottom: 0,
+                              fontSize: 8,
+                              color: "#27496D",
+                            }}
+                          >
+                            {`main image-${index + 1}`}
+                          </Typography>
+                        )}
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography pl={1}>Add product images</Typography>
+                  )}
+                  {matches && formValues.images.length > 5 && (
+                    <Typography sx={{ pl: 0.5, fontSize: 14 }}>
+                      +{formValues.images.length - 5}
+                    </Typography>
+                  )}
+                </Grid>
+
+                <Grid
+                  item
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    color: "#00909E",
+                    cursor: "pointer",
+                    "&:hover": { color: "#007d88" },
+                  }}
+                >
+                  <Tooltip title="Click to add images">
+                    <AddPhotoAlternateIcon
+                      fontSize="large"
+                      onClick={() => setOpenModal(true)}
+                    />
+                  </Tooltip>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>

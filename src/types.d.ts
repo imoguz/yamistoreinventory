@@ -233,11 +233,6 @@ interface IProduct {
       url: string;
       isMainImage: Boolean;
       _id: string;
-    },
-    {
-      url: string;
-      isMainImage: Boolean;
-      _id: string;
     }
   ];
   createdAt: Date;
@@ -288,7 +283,7 @@ interface INewVariantForm {
   isDefault: boolean | null;
 }
 
-interface image {
+interface IImage {
   _id?: string;
   url: string;
   isMainImage: boolean;
@@ -303,7 +298,7 @@ interface INewProduct {
   price: number | null;
   discount: string;
   promotion: string;
-  images: image[];
+  images: IImage[];
 }
 
 // interface IOpenModalState {

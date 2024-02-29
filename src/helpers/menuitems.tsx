@@ -21,6 +21,7 @@ import DiscountDataGrid from "../pages/atributes/DiscountDataGrid";
 import PromotionDataGrid from "../pages/atributes/PromotionDataGrid";
 import CategoryDataGrid from "../pages/atributes/CategoryDataGrid";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Grid4x4Icon from "@mui/icons-material/Grid4x4";
 
 export const menuItems: IMenuItem[] = [
   {
@@ -35,12 +36,11 @@ export const menuItems: IMenuItem[] = [
     path: "/attributes",
   },
   { title: "Brands", icon: <SellIcon />, path: "/brand" },
-  { title: "Purchases", icon: <ShoppingCartIcon />, path: "/stock/purchases" },
-  { title: "Sales", icon: <PointOfSaleIcon />, path: "/sales" },
+  { title: "Store", icon: <StorefrontIcon />, path: "/store" },
+  { title: "Purchases", icon: <ShoppingCartIcon />, path: "/stock" },
+  { title: "Sales", icon: <PointOfSaleIcon />, path: "/stock" },
   { title: "Inventory Tracking", icon: <GpsFixedIcon />, path: "/stock" },
-  { title: "Store", icon: <StorefrontIcon />, path: "/stock" },
-  { title: "Firms", icon: <StoreIcon />, path: "/stock/firms" },
-  { title: "Reporting", icon: <AssessmentIcon />, path: "/stock/brands" },
+  { title: "Reporting", icon: <AssessmentIcon />, path: "/stock" },
   { title: "Settings & Layout", icon: <SettingsIcon />, path: "/settings" },
 ];
 
@@ -56,4 +56,5 @@ export const attributeMenuItems: ISubMenuItem[] = [
 export const settingMenuItems: ISubMenuItem[] = [
   { title: "Banner", icon: <PaletteIcon />, path: <ColorDataGrid /> },
   { title: "Menu", icon: <AspectRatioIcon />, path: <SizeDataGrid /> },
+  { title: "Layout", icon: <Grid4x4Icon />, path: <SizeDataGrid /> },
 ];

@@ -134,7 +134,7 @@ const BannerDataCard: React.FC<IBannerDataCardProps> = ({ item, setRows }) => {
       )}
       <Box>
         <ConfirmDeletion {...{ confirmDelete, setConfirmDelete }} />
-        <Card sx={{ width: { xs: 255, sm: 380, md: 400 }, height: 450 }}>
+        <Card sx={{ width: { xs: 255, sm: 380, md: 395 }, height: 450 }}>
           <Box position="relative">
             <CardMedia
               component="img"
