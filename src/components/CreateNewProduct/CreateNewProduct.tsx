@@ -124,6 +124,8 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
         bgcolor: "#27496dc2",
         backgroundImage: `url(${bgImage})`,
         backgroundRepeat: "repeat",
+        display: "flex",
+        justifyContent: "center",
       }}
     >
       <Grid
@@ -131,7 +133,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
         spacing={{ xs: 0, sm: 1 }}
         component="form"
         onSubmit={handleSubmit}
-        sx={{ maxWidth: 900, mx: "auto" }}
+        sx={{ maxWidth: 900 }}
       >
         <Grid item>
           <Grid
