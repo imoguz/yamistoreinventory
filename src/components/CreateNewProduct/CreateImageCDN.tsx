@@ -24,14 +24,14 @@ const style = {
   marginLeft: "-190px",
 };
 
-interface ICreateMultiCDNProps {
+interface ICreateImageCDNProps {
   openModal: boolean;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   formValues: INewProduct;
   setFormValues: React.Dispatch<React.SetStateAction<INewProduct>>;
 }
 
-const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
+const CreateImageCDN: React.FC<ICreateImageCDNProps> = ({
   openModal,
   setOpenModal,
   formValues,
@@ -216,7 +216,6 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
                             <Grid
                               item
                               ref={provided.innerRef}
-                              {...provided.dragHandleProps}
                               {...provided.draggableProps}
                               sx={{
                                 width: 345,
@@ -240,6 +239,7 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
                                   arrow
                                 >
                                   <Box
+                                    {...provided.dragHandleProps}
                                     sx={{
                                       display: "flex",
                                       alignItems: "end",
@@ -345,4 +345,4 @@ const CreateMultiCDN: React.FC<ICreateMultiCDNProps> = ({
   );
 };
 
-export default CreateMultiCDN;
+export default CreateImageCDN;

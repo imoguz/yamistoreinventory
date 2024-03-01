@@ -1,32 +1,26 @@
 import React, { useEffect, useState } from "react";
-import SaveIcon from "@mui/icons-material/Save";
-import {
-  TextField,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Box,
-} from "@mui/material";
-import { Tooltip, CardMedia, Select } from "@mui/material";
+import { MenuItem, FormControl, InputLabel, Box } from "@mui/material";
+import { TextField, Tooltip, CardMedia, Select } from "@mui/material";
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { useThemeContext } from "../../context/themeContext";
-import bgImage from "../../assets/bgdotedimg.png";
-import CreateMultiCDN from "./CreateMultiCDN";
 import { toastifySuccess, toastifyError } from "../../helpers/toastify";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import bgImage from "../../assets/bgdotedimg.png";
+import CreateImageCDN from "./CreateImageCDN";
+import SaveIcon from "@mui/icons-material/Save";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import {
-  readProducts,
-  createProduct,
-  updateProduct,
-} from "../../features/productSlice";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import { readBrands } from "../../features/brandSlice";
 import { readDiscounts } from "../../features/discountSlice";
 import { readPromotions } from "../../features/promotionSlice";
 import { readCategories } from "../../features/categorySlice";
 import { readStores } from "../../features/storeSlice";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import {
+  readProducts,
+  createProduct,
+  updateProduct,
+} from "../../features/productSlice";
 
 interface ICreateNewProductProps {
   setOpenNP: React.Dispatch<React.SetStateAction<boolean>>;
@@ -537,7 +531,7 @@ const CreateNewProduct: React.FC<ICreateNewProductProps> = ({
           </Button>
         </Grid>
       </Grid>
-      <CreateMultiCDN
+      <CreateImageCDN
         {...{ openModal, setOpenModal, formValues, setFormValues }}
       />
     </Paper>
